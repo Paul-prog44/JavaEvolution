@@ -1,3 +1,4 @@
+import bean.Task;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,11 +25,11 @@ public class deleteTask extends HttpServlet {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            String hql = "DELETE FROM Task "  +
-                    "WHERE id = :task_id";
-            Query query = session.createQuery(hql);
-            query.setParameter("task_id", id);
-            query.executeUpdate();
+            Task task = session.get(Task.class, id);
+            if (task == null) {
+                throw new ServletException("Aucune tache trouvée");
+            }
+            session.delete(task);
             tx.commit();
         } catch (Exception e) {
             if (tx != null) {

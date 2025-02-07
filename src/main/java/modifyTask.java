@@ -50,32 +50,31 @@ public class modifyTask extends HttpServlet {
 
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction tx = null;
+
         try {
             tx = session.beginTransaction();
-            Connection connection = ConnectionDB.getInstance();
 
-            String hql = "UPDATE Annonce a SET a.title = :title, " +
-                    "a.description = :description, " +
-                    "a.address = :address, " +
-                    "a.mail = :mail " +
-                    "WHERE a.id = :id";
+            Task task = session.get(Task.class, id);
+            if (task == null) {
+                throw new ServletException("Pas de tache trouvée");
+            }
 
-            Query query = session.createQuery(hql);
-            query.setParameter("title", title);
-            query.setParameter("description", description);
-            query.setParameter("address", address);
-            query.setParameter("mail", email);
+            task.setTitle(title);
+            task.setDescription(description);
+            task.setMail(email);
+            task.setAddress(address);
 
-            query.setParameter("task_id", id);
-            query.executeUpdate();
             tx.commit();
-
-
-
         } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
             e.printStackTrace();
+        } finally {
+            session.close();
         }
-        RequestDispatcher dispatcher = request.getRequestDispatcher("annonceUpdate.jsp");
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
         dispatcher.forward(request, response);
     }
 }
