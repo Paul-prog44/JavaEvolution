@@ -1,0 +1,8 @@
+formulaire.class
+util\HibernateUtil.class
+ConnectionDB.class
+modifyTask.class
+getTask.class
+bean\Task.class
+addTask.class
+deleteTask.class
